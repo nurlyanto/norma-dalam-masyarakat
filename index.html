@@ -1,1 +1,340 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis Interaktif Norma dalam Masyarakat</title>
+  <style>
+    :root {
+      --bg1: #e3f2fd;
+      --bg2: #fff8e1;
+      --card: #ffffff;
+      --text: #1a237e;
+      --muted: #455a64;
+      --line: #bbdefb;
+      --primary: #1565c0;
+      --primary-2: #42a5f5;
+      --accent: #ffb300;
+      --ok: #2e7d32;
+      --shadow: 0 12px 30px rgba(21, 101, 192, .16);
+    }
+    html.dark {
+      --bg1: #0b1220;
+      --bg2: #102033;
+      --card: #152238;
+      --text: #e3f2fd;
+      --muted: #b0bec5;
+      --line: #29405f;
+      --primary: #64b5f6;
+      --primary-2: #90caf9;
+      --accent: #ffd54f;
+      --ok: #81c784;
+      --shadow: 0 12px 30px rgba(0, 0, 0, .35);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(255, 213, 79, .28), transparent 28%),
+        radial-gradient(circle at 90% 8%, rgba(66, 165, 245, .28), transparent 26%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+    .wrap { width: min(760px, 92%); margin: 0 auto; padding: 22px 0 40px; }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .brand { font-weight: 800; font-size: 15px; }
+    .theme-btn, .btn {
+      border: 0; cursor: pointer; border-radius: 999px; font-weight: 800;
+      transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
+    }
+    .theme-btn {
+      background: var(--card); color: var(--text); padding: 10px 14px;
+      box-shadow: var(--shadow); border: 1px solid var(--line);
+    }
+    .card {
+      background: var(--card); border-radius: 24px; padding: 26px 22px;
+      box-shadow: var(--shadow); border: 1px solid var(--line);
+      animation: pop .35s ease;
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(10px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    h1 { margin: 8px 0 10px; font-size: clamp(24px, 5vw, 34px); line-height: 1.25; }
+    .desc { color: var(--muted); line-height: 1.6; margin: 0 0 18px; }
+    .hero-icon { font-size: 48px; }
+    label { display: block; font-weight: 700; margin-bottom: 8px; }
+    input[type="text"] {
+      width: 100%; padding: 14px 16px; border-radius: 16px; border: 2px solid var(--line);
+      background: transparent; color: var(--text); font-size: 16px; outline: none;
+    }
+    input[type="text"]:focus { border-color: var(--primary-2); }
+    .error { color: #e53935; font-weight: 700; min-height: 22px; margin: 8px 0 0; }
+    .btn {
+      padding: 13px 18px; font-size: 15px;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff; box-shadow: 0 8px 18px rgba(21,101,192,.28); }
+    .btn-accent { background: linear-gradient(135deg, #ffb300, #ffd54f); color: #1a237e; }
+    .btn-ghost { background: transparent; color: var(--text); border: 2px solid var(--line); }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .meta { display: flex; justify-content: space-between; gap: 8px; align-items: center; color: var(--muted); font-weight: 700; }
+    .progress { height: 12px; background: color-mix(in srgb, var(--line) 70%, white); border-radius: 99px; overflow: hidden; margin: 12px 0 18px; }
+    .progress > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #43a047, #1e88e5); transition: width .3s ease; }
+    .question { font-size: clamp(18px, 4vw, 24px); margin: 0 0 16px; line-height: 1.4; }
+    .opt {
+      width: 100%; text-align: left; margin: 0 0 10px; padding: 13px 14px;
+      border-radius: 16px; border: 2px solid var(--line); background: transparent;
+      color: var(--text); font-size: 15px; cursor: pointer; font-weight: 700;
+    }
+    .opt:hover { border-color: var(--primary-2); background: color-mix(in srgb, var(--primary-2) 12%, transparent); }
+    .opt.selected { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 16%, transparent); }
+    .result { text-align: center; }
+    .badge {
+      width: 140px; height: 140px; margin: 6px auto 14px; border-radius: 50%;
+      display: grid; place-items: center; font-size: 54px;
+      background: radial-gradient(circle at 30% 30%, #fff59d, #ffb300 50%, #ef6c00);
+      box-shadow: var(--shadow);
+    }
+    .score { font-size: 34px; font-weight: 900; margin: 8px 0; }
+    .hidden { display: none; }
+    .dots { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .dots span {
+      width: 12px; height: 12px; border-radius: 50%; background: var(--line);
+    }
+    .dots span.done { background: var(--ok); }
+    .dots span.now { background: var(--accent); transform: scale(1.2); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">📘 Norma dalam Masyarakat</div>
+      <button class="theme-btn" id="themeBtn" type="button">🌙 Mode Gelap</button>
+    </div>
+
+    <section class="card" id="startPage">
+      <div class="hero-icon">🎯</div>
+      <h1>Kuis Interaktif Norma dalam Masyarakat</h1>
+      <p class="desc">Yuk, uji pemahamanmu tentang norma dalam masyarakat!</p>
+      <label for="nama">Nama siswa</label>
+      <input id="nama" type="text" maxlength="40" placeholder="Masukkan nama kamu" />
+      <p class="error" id="errorBox"></p>
+      <button class="btn btn-primary" id="startBtn" type="button">Mulai Kuis</button>
+    </section>
+
+    <section class="card hidden" id="quizPage">
+      <div class="meta">
+        <span id="soalNomor">Soal 1 dari 10</span>
+        <span id="namaMini"></span>
+      </div>
+      <div class="progress"><span id="bar"></span></div>
+      <div class="dots" id="dots"></div>
+      <h2 class="question" id="questionText"></h2>
+      <div id="options"></div>
+      <div class="row">
+        <button class="btn btn-ghost" id="prevBtn" type="button">⬅️ Sebelumnya</button>
+        <button class="btn btn-primary" id="nextBtn" type="button">Berikutnya ➡️</button>
+      </div>
+    </section>
+
+    <section class="card result hidden" id="resultPage">
+      <div class="badge" id="resultBadge">🎉</div>
+      <h1 id="resultTitle"></h1>
+      <p class="desc" id="resultDesc"></p>
+      <div class="score" id="resultScore"></div>
+      <p class="desc" id="resultMsg"></p>
+      <button class="btn btn-accent" id="retryBtn" type="button">Ulangi Kuis</button>
+    </section>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      {
+        q: "Norma adalah ....",
+        a: ["Permainan masyarakat", "Aturan yang mengatur kehidupan bersama", "Hukuman bagi siswa", "Kegiatan sekolah"],
+        c: 1
+      },
+      {
+        q: "Norma yang berasal dari kebiasaan masyarakat disebut ....",
+        a: ["Norma hukum", "Norma agama", "Norma kesopanan", "Norma negara"],
+        c: 2
+      },
+      {
+        q: 'Mengucapkan "terima kasih" setelah dibantu merupakan contoh ....',
+        a: ["Norma hukum", "Norma kesopanan", "Norma agama", "Norma ekonomi"],
+        c: 1
+      },
+      {
+        q: "Rajin beribadah sesuai agama merupakan contoh ....",
+        a: ["Norma agama", "Norma hukum", "Norma adat", "Norma olahraga"],
+        c: 0
+      },
+      {
+        q: "Berkata jujur merupakan contoh ....",
+        a: ["Norma kesopanan", "Norma hukum", "Norma kesusilaan", "Norma adat"],
+        c: 2
+      },
+      {
+        q: "Mematuhi rambu lalu lintas termasuk ....",
+        a: ["Norma agama", "Norma kesopanan", "Norma kesusilaan", "Norma hukum"],
+        c: 3
+      },
+      {
+        q: "Jika menemukan dompet di jalan, sebaiknya ....",
+        a: ["Disimpan sendiri", "Diberikan kepada pemiliknya", "Dibuang", "Dijual"],
+        c: 1
+      },
+      {
+        q: "Norma membantu masyarakat untuk ....",
+        a: ["Bertengkar", "Hidup rukun dan tertib", "Bermalas-malasan", "Melanggar aturan"],
+        c: 1
+      },
+      {
+        q: "Tidak membully teman merupakan contoh sikap yang sesuai dengan ....",
+        a: ["Norma yang baik", "Pelanggaran norma", "Hukuman", "Permainan"],
+        c: 0
+      },
+      {
+        q: "Salah satu manfaat norma adalah ....",
+        a: ["Menimbulkan kekacauan", "Membuat masyarakat tertib", "Menambah masalah", "Menghambat pergaulan"],
+        c: 1
+      }
+    ];
+
+    const startPage = document.getElementById("startPage");
+    const quizPage = document.getElementById("quizPage");
+    const resultPage = document.getElementById("resultPage");
+    const namaInput = document.getElementById("nama");
+    const errorBox = document.getElementById("errorBox");
+    const themeBtn = document.getElementById("themeBtn");
+
+    let nama = "";
+    let index = 0;
+    let answers = Array(QUESTIONS.length).fill(null);
+
+    function show(page) {
+      startPage.classList.add("hidden");
+      quizPage.classList.add("hidden");
+      resultPage.classList.add("hidden");
+      page.classList.remove("hidden");
+    }
+
+    function applyTheme(dark) {
+      document.documentElement.classList.toggle("dark", dark);
+      themeBtn.textContent = dark ? "☀️ Mode Terang" : "🌙 Mode Gelap";
+      localStorage.setItem("kuis_tema", dark ? "dark" : "light");
+    }
+    applyTheme(localStorage.getItem("kuis_tema") === "dark");
+    themeBtn.onclick = () => applyTheme(!document.documentElement.classList.contains("dark"));
+
+    document.getElementById("startBtn").onclick = function () {
+      nama = namaInput.value.trim();
+      if (!nama) {
+        errorBox.textContent = "Silakan masukkan nama terlebih dahulu.";
+        namaInput.focus();
+        return;
+      }
+      errorBox.textContent = "";
+      index = 0;
+      answers = Array(QUESTIONS.length).fill(null);
+      document.getElementById("namaMini").textContent = "👤 " + nama;
+      show(quizPage);
+      render();
+    };
+
+    function render() {
+      const item = QUESTIONS[index];
+      document.getElementById("soalNomor").textContent = "Soal " + (index + 1) + " dari " + QUESTIONS.length;
+      document.getElementById("questionText").textContent = (index + 1) + ". " + item.q;
+      document.getElementById("bar").style.width = ((index + 1) / QUESTIONS.length * 100) + "%";
+      document.getElementById("prevBtn").disabled = index === 0;
+      document.getElementById("nextBtn").textContent = index === QUESTIONS.length - 1 ? "Selesai ✅" : "Berikutnya ➡️";
+
+      const dots = document.getElementById("dots");
+      dots.innerHTML = "";
+      QUESTIONS.forEach((_, i) => {
+        const d = document.createElement("span");
+        if (i === index) d.className = "now";
+        else if (answers[i] !== null) d.className = "done";
+        dots.appendChild(d);
+      });
+
+      const box = document.getElementById("options");
+      box.innerHTML = "";
+      item.a.forEach((text, i) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "opt" + (answers[index] === i ? " selected" : "");
+        btn.textContent = String.fromCharCode(65 + i) + ". " + text;
+        btn.onclick = () => {
+          answers[index] = i;
+          render();
+        };
+        box.appendChild(btn);
+      });
+    }
+
+    document.getElementById("prevBtn").onclick = function () {
+      if (index > 0) { index--; render(); }
+    };
+    document.getElementById("nextBtn").onclick = function () {
+      if (index < QUESTIONS.length - 1) {
+        index++;
+        render();
+      } else {
+        finish();
+      }
+    };
+
+    function finish() {
+      let benar = 0;
+      QUESTIONS.forEach((item, i) => {
+        if (answers[i] === item.c) benar++;
+      });
+      const skor = Math.round((benar / QUESTIONS.length) * 100);
+      let ucapan = "";
+      let emoji = "🎉";
+      if (skor >= 90) {
+        emoji = "🌟";
+        ucapan = "🌟 Hebat, " + nama + "! Kamu sangat memahami norma dalam masyarakat.";
+      } else if (skor >= 70) {
+        emoji = "👏";
+        ucapan = "👏 Bagus, " + nama + "! Pemahamanmu sudah baik. Terus semangat belajar.";
+      } else if (skor >= 50) {
+        emoji = "😊";
+        ucapan = "😊 Lumayan, " + nama + "! Yuk belajar lagi agar hasilnya semakin baik.";
+      } else {
+        emoji = "💪";
+        ucapan = "💪 Tetap semangat, " + nama + "! Pelajari kembali materinya dan coba lagi.";
+      }
+
+      document.getElementById("resultBadge").textContent = emoji;
+      document.getElementById("resultTitle").textContent = "🎉 Selamat, " + nama + "!";
+      document.getElementById("resultDesc").textContent = "Kamu telah menyelesaikan Kuis Interaktif Norma dalam Masyarakat.";
+      document.getElementById("resultScore").textContent = "Skor Kamu: " + skor + "/100";
+      document.getElementById("resultMsg").innerHTML =
+        "Jawaban benar: <b>" + benar + "</b> dari " + QUESTIONS.length +
+        "<br>Persentase: <b>" + skor + "%</b><br><br>" + ucapan;
+      show(resultPage);
+    }
+
+    document.getElementById("retryBtn").onclick = function () {
+      nama = "";
+      namaInput.value = "";
+      answers = Array(QUESTIONS.length).fill(null);
+      index = 0;
+      errorBox.textContent = "";
+      show(startPage);
+      namaInput.focus();
+    };
+  </script>
+</body>
+</html>
 
